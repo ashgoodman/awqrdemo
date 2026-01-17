@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "AW Demo",
+    "slug": "awdemo",
+    "version": "1.0.0",
+    "scheme": "awdemo",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "platforms": [
+      "android"
+    ],
+    "android": {
+      "package": "com.awdemo.app",
+      "permissions": [],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "jzm.qah.mybluehost.me",
+              "pathPrefix": "/website_10f009d1/v.php"
+            },
+            {
+              "scheme": "awdemo"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "93151411-0e71-4761-8d65-37d41ce3544b"
+      }
+    }
+  }
+}
