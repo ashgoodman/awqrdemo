@@ -23,6 +23,16 @@
               "pathPrefix": "/website_10f009d1/v.php"
             },
             {
+              "scheme": "https",
+              "host": "*.ngrok.io",
+              "pathPrefix": "/session"
+            },
+            {
+              "scheme": "https",
+              "host": "*.ngrok-free.app",
+              "pathPrefix": "/session"
+            },
+            {
               "scheme": "awdemo"
             }
           ],
