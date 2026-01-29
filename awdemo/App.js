@@ -8,9 +8,10 @@ const DEFAULT_SERVER_URL = 'https://dev.agewallet.io';
 
 export default function App() {
   const [status, setStatus] = useState('Ready to verify');
-  const [mode, setMode] = useState('ios'); // 'ios' or 'android'
   const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER_URL);
   const [showSettings, setShowSettings] = useState(false);
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  const [manualToken, setManualToken] = useState('');
 
   // Check for pending claim on first launch (iOS IP matching flow)
   const checkPendingClaim = async () => {
@@ -113,15 +114,11 @@ export default function App() {
     AsyncStorage.getItem('serverUrl').then(url => {
       if (url) setServerUrl(url);
     });
-    AsyncStorage.getItem('mode').then(m => {
-      if (m) setMode(m);
-    });
   }, []);
 
   // Save settings
   const saveSettings = async () => {
     await AsyncStorage.setItem('serverUrl', serverUrl);
-    await AsyncStorage.setItem('mode', mode);
     setShowSettings(false);
     Alert.alert('Saved', 'Settings saved successfully');
   };
@@ -131,33 +128,49 @@ export default function App() {
       <Text style={styles.title}>AW Demo</Text>
       <Text style={styles.subtitle}>Deep Link Testing</Text>
 
-      <View style={styles.modeContainer}>
-        <Text style={styles.modeLabel}>Mode: {mode.toUpperCase()}</Text>
-        <TouchableOpacity
-          style={[styles.modeButton, mode === 'ios' && styles.modeButtonActive]}
-          onPress={() => setMode('ios')}
-        >
-          <Text style={styles.modeButtonText}>iOS (IP Match)</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.modeButton, mode === 'android' && styles.modeButtonActive]}
-          onPress={() => setMode('android')}
-        >
-          <Text style={styles.modeButtonText}>Android (Referrer)</Text>
-        </TouchableOpacity>
-      </View>
-
       <Text style={styles.status}>{status}</Text>
 
       <TouchableOpacity style={styles.button} onPress={checkPendingClaim}>
-        <Text style={styles.buttonText}>Check Pending Claim</Text>
+        <Text style={styles.buttonText}>🍎 Check Pending Claim</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, styles.manualButton]}
+        onPress={() => setShowManualEntry(!showManualEntry)}
+      >
+        <Text style={styles.buttonText}>🤖 Manual Token Entry</Text>
+      </TouchableOpacity>
+
+      {showManualEntry && (
+        <View style={styles.manualContainer}>
+          <Text style={styles.settingsLabel}>Session Token:</Text>
+          <TextInput
+            style={styles.input}
+            value={manualToken}
+            onChangeText={(text) => setManualToken(text.toUpperCase())}
+            placeholder="AWVF-2026-XXXX-1234-ABCD"
+            autoCapitalize="characters"
+            autoCorrect={false}
+          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              if (manualToken.trim()) {
+                claimSession(manualToken.trim());
+                setShowManualEntry(false);
+              }
+            }}
+          >
+            <Text style={styles.buttonText}>Claim Session</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <TouchableOpacity
         style={[styles.button, styles.settingsButton]}
         onPress={() => setShowSettings(!showSettings)}
       >
-        <Text style={styles.buttonText}>Settings</Text>
+        <Text style={styles.buttonText}>⚙️ Settings</Text>
       </TouchableOpacity>
 
       {showSettings && (
@@ -178,10 +191,7 @@ export default function App() {
       )}
 
       <Text style={styles.hint}>
-        {mode === 'ios'
-          ? 'iOS mode: Tap "Check Pending Claim" to find session via IP matching'
-          : 'Android mode: Session token comes from Install Referrer (requires Play Store install)'
-        }
+        🍎 = iOS IP matching  •  🤖 = Enter token manually  •  ⚙️ = Server URL
       </Text>
     </View>
   );
@@ -206,34 +216,6 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 30,
   },
-  modeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-    gap: 10,
-  },
-  modeLabel: {
-    width: '100%',
-    textAlign: 'center',
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
-  },
-  modeButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#ddd',
-  },
-  modeButtonActive: {
-    backgroundColor: '#007AFF',
-  },
-  modeButtonText: {
-    color: '#fff',
-    fontSize: 14,
-  },
   status: {
     fontSize: 18,
     color: '#333',
@@ -252,6 +234,16 @@ const styles = StyleSheet.create({
   },
   settingsButton: {
     backgroundColor: '#666',
+  },
+  manualButton: {
+    backgroundColor: '#34C759',
+  },
+  manualContainer: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
   },
   buttonText: {
     color: '#fff',
