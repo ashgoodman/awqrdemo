@@ -19,8 +19,8 @@
           "data": [
             {
               "scheme": "https",
-              "host": "jzm.qah.mybluehost.me",
-              "pathPrefix": "/website_10f009d1/v.php"
+              "host": "dev.agewallet.io",
+              "pathPrefix": "/session"
             },
             {
               "scheme": "https",
